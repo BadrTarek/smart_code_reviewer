@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from pathlib import Path
+from dotenv import load_dotenv
 
+DOTENV_PATH = Path(__file__).parent.parent / ".env"
+load_dotenv(DOTENV_PATH)
 
 def get_html_content() -> str:
     """Read and return the HTML content from the static file."""
