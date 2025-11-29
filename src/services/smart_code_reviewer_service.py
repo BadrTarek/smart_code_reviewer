@@ -22,3 +22,12 @@ class SmartCodeReviewerService:
         ]
         response = self.structured_llm.invoke(messages)
         return response
+
+    def review_pr_diff(self, diff: str) -> CodeReviewerOutputSchema:
+        formatted_content = f"Git Diff:\n{diff}"
+        messages = [
+            SystemMessage(content=self.system_prompt),
+            HumanMessage(content=formatted_content)
+        ]
+        response = self.structured_llm.invoke(messages)
+        return response

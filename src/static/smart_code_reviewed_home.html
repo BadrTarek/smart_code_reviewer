@@ -547,10 +547,36 @@
             document.getElementById(tab + '-tab').classList.add('active');
         }
 
-        function reviewGithubPR(event) {
+        async function reviewGithubPR(event) {
             event.preventDefault();
             const url = document.getElementById('github-url').value;
-            alert("GitHub PR review is not yet implemented. Please use Manual Input.");
+            const btn = event.target.querySelector('.btn-submit');
+            const originalText = btn.textContent;
+
+            btn.disabled = true;
+            btn.textContent = 'Analyzing...';
+
+            try {
+                const response = await fetch('/api/review/github', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ github_url: url })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || `Error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                populateResults(data);
+                showResults();
+            } catch (error) {
+                alert('Failed to review GitHub PR: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
         }
 
         async function reviewManualCode(event) {
