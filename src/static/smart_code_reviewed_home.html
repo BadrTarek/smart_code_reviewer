@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Code Reviewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .input-method {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        input[type="url"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .code-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .code-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .help-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .icon {
+            margin-right: 8px;
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .results-section.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .results-header h2 {
+            color: #333;
+            font-size: 1.8em;
+        }
+
+        .score-badge {
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .score-excellent { background: #10b981; color: white; }
+        .score-good { background: #3b82f6; color: white; }
+        .score-warning { background: #f59e0b; color: white; }
+        .score-critical { background: #ef4444; color: white; }
+
+        .review-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .review-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .review-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .review-card li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .review-card li:last-child {
+            border-bottom: none;
+        }
+
+        .issue-critical { border-left-color: #ef4444; }
+        .issue-warning { border-left-color: #f59e0b; }
+        .issue-info { border-left-color: #3b82f6; }
+        .issue-success { border-left-color: #10b981; }
+
+        .severity {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .severity-critical { background: #fee2e2; color: #dc2626; }
+        .severity-warning { background: #fef3c7; color: #d97706; }
+        .severity-info { background: #dbeafe; color: #2563eb; }
+
+        .code-snippet {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+
+        .line-number {
+            color: #858585;
+            margin-right: 15px;
+            user-select: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .btn-new-review {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-new-review:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Smart Code Reviewer</h1>
+            <p>Review code changes with AI-powered analysis</p>
+        </div>
+
+        <div class="content">
+            <div class="input-method">
+                <button class="tab active" onclick="switchTab('github')">
+                    <span class="icon">🔗</span> GitHub PR
+                </button>
+                <button class="tab" onclick="switchTab('manual')">
+                    <span class="icon">📝</span> Manual Input
+                </button>
+            </div>
+
+            <div id="github-tab" class="tab-content active">
+                <form onsubmit="reviewGithubPR(event)">
+                    <div class="form-group">
+                        <label for="github-url">GitHub Pull Request URL</label>
+                        <input 
+                            type="url" 
+                            id="github-url" 
+                            placeholder="https://github.com/username/repo/pull/123"
+                            required
+                        >
+                        <p class="help-text">Enter a valid GitHub PR URL to analyze the code changes</p>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        Review Pull Request
+                    </button>
+                </form>
+            </div>
+
+            <div id="manual-tab" class="tab-content">
+                <form onsubmit="reviewManualCode(event)">
+                    <div class="code-grid">
+                        <div class="form-group">
+                            <label for="old-code">Old Code</label>
+                            <textarea 
+                                id="old-code" 
+                                placeholder="Paste the original code here..."
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-code">New Code</label>
+                            <textarea 
+                                id="new-code" 
+                                placeholder="Paste the modified code here..."
+                                required
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        Review Code Changes
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-section" class="results-section">
+                <div class="results-header">
+                    <h2>📊 Review Results</h2>
+                    <div>
+                        <span id="score-badge" class="score-badge">Score: 85/100</span>
+                        <button class="btn-new-review" onclick="newReview()">New Review</button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-issues">3</div>
+                        <div class="stat-label">Issues Found</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-critical">1</div>
+                        <div class="stat-label">Critical</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-warnings">2</div>
+                        <div class="stat-label">Warnings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-suggestions">5</div>
+                        <div class="stat-label">Suggestions</div>
+                    </div>
+                </div>
+
+                <div class="review-card issue-critical">
+                    <h3>🚨 Critical Issues</h3>
+                    <ul id="critical-issues">
+                        <li>
+                            <span class="severity severity-critical">CRITICAL</span>
+                            <strong>SQL Injection Vulnerability</strong> - Line 45
+                            <div class="code-snippet">
+<span class="line-number">45</span>query = "SELECT * FROM users WHERE id = " + userId;
+                            </div>
+                            User input is directly concatenated into SQL query without sanitization. Use parameterized queries instead.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="review-card issue-warning">
+                    <h3>⚠️ Warnings</h3>
+                    <ul id="warning-issues">
+                        <li>
+                            <span class="severity severity-warning">WARNING</span>
+                            <strong>Missing Error Handling</strong> - Line 78
+                            <div class="code-snippet">
+<span class="line-number">78</span>const data = JSON.parse(response);
+                            </div>
+                            JSON.parse() can throw an exception. Wrap in try-catch block.
+                        </li>
+                        <li>
+                            <span class="severity severity-warning">WARNING</span>
+                            <strong>Potential Memory Leak</strong> - Line 102
+                            <div class="code-snippet">
+<span class="line-number">102</span>setInterval(() => { fetchData(); }, 1000);
+                            </div>
+                            No cleanup function provided. Consider storing the interval ID and clearing it when component unmounts.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="review-card issue-info">
+                    <h3>💡 Suggestions</h3>
+                    <ul id="suggestions">
+                        <li>
+                            <span class="severity severity-info">INFO</span>
+                            Consider using async/await instead of promise chains for better readability
+                        </li>
+                        <li>
+                            <span class="severity severity-info">INFO</span>
+                            Variable naming could be more descriptive (e.g., 'usr' → 'currentUser')
+                        </li>
+                        <li>
+                            <span class="severity severity-info">INFO</span>
+                            Add JSDoc comments for public functions
+                        </li>
+                        <li>
+                            <span class="severity severity-info">INFO</span>
+                            Consider extracting magic numbers into named constants
+                        </li>
+                        <li>
+                            <span class="severity severity-info">INFO</span>
+                            Code complexity in function 'processData' is high. Consider refactoring into smaller functions.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="review-card issue-success">
+                    <h3>✅ Positive Findings</h3>
+                    <ul id="positive-findings">
+                        <li>Good use of TypeScript for type safety</li>
+                        <li>Proper input validation on user-facing forms</li>
+                        <li>Consistent code formatting and style</li>
+                        <li>Appropriate use of design patterns</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            // Update tab buttons
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.closest('.tab').classList.add('active');
+
+            // Update tab content
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(c => c.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        function reviewGithubPR(event) {
+            event.preventDefault();
+            const url = document.getElementById('github-url').value;
+            
+            // Show results section with animation
+            showResults();
+            
+            // Here you would typically send the URL to your backend API
+            // and populate the results dynamically
+            
+            // Example: Send to backend
+            // fetch('/api/review-pr', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ url: url })
+            // })
+            // .then(response => response.json())
+            // .then(data => populateResults(data));
+        }
+
+        function reviewManualCode(event) {
+            event.preventDefault();
+            const oldCode = document.getElementById('old-code').value;
+            const newCode = document.getElementById('new-code').value;
+            
+            // Show results section with animation
+            showResults();
+            
+            // Here you would typically send the code to your backend API
+            // and populate the results dynamically
+            
+            // Example: Send to backend
+            // fetch('/api/review-code', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ oldCode: oldCode, newCode: newCode })
+            // })
+            // .then(response => response.json())
+            // .then(data => populateResults(data));
+        }
+
+        function showResults() {
+            document.getElementById('results-section').classList.add('show');
+            // Scroll to results
+            setTimeout(() => {
+                document.getElementById('results-section').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
+        }
+
+        function newReview() {
+            document.getElementById('results-section').classList.remove('show');
+            document.getElementById('github-url').value = '';
+            document.getElementById('old-code').value = '';
+            document.getElementById('new-code').value = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Example function to populate results dynamically
+        function populateResults(data) {
+            // Update score badge
+            const score = data.score || 85;
+            const badge = document.getElementById('score-badge');
+            badge.textContent = `Score: ${score}/100`;
+            
+            if (score >= 90) badge.className = 'score-badge score-excellent';
+            else if (score >= 75) badge.className = 'score-badge score-good';
+            else if (score >= 60) badge.className = 'score-badge score-warning';
+            else badge.className = 'score-badge score-critical';
+            
+            // Update stats
+            document.getElementById('stat-issues').textContent = data.totalIssues || 0;
+            document.getElementById('stat-critical').textContent = data.criticalCount || 0;
+            document.getElementById('stat-warnings').textContent = data.warningCount || 0;
+            document.getElementById('stat-suggestions').textContent = data.suggestionCount || 0;
+            
+            // Populate issue lists dynamically based on API response
+            // This is where you'd insert the actual issues from your backend
+        }
+    </script>
+</body>
+</html>
