@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -190,8 +191,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .results-header {
@@ -213,10 +221,25 @@
             font-size: 1.2em;
         }
 
-        .score-excellent { background: #10b981; color: white; }
-        .score-good { background: #3b82f6; color: white; }
-        .score-warning { background: #f59e0b; color: white; }
-        .score-critical { background: #ef4444; color: white; }
+        .score-excellent {
+            background: #10b981;
+            color: white;
+        }
+
+        .score-good {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .score-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .score-critical {
+            background: #ef4444;
+            color: white;
+        }
 
         .review-card {
             background: #f8f9fa;
@@ -250,10 +273,21 @@
             border-bottom: none;
         }
 
-        .issue-critical { border-left-color: #ef4444; }
-        .issue-warning { border-left-color: #f59e0b; }
-        .issue-info { border-left-color: #3b82f6; }
-        .issue-success { border-left-color: #10b981; }
+        .issue-critical {
+            border-left-color: #ef4444;
+        }
+
+        .issue-warning {
+            border-left-color: #f59e0b;
+        }
+
+        .issue-info {
+            border-left-color: #3b82f6;
+        }
+
+        .issue-success {
+            border-left-color: #10b981;
+        }
 
         .severity {
             display: inline-block;
@@ -264,9 +298,20 @@
             margin-right: 8px;
         }
 
-        .severity-critical { background: #fee2e2; color: #dc2626; }
-        .severity-warning { background: #fef3c7; color: #d97706; }
-        .severity-info { background: #dbeafe; color: #2563eb; }
+        .severity-critical {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .severity-warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .severity-info {
+            background: #dbeafe;
+            color: #2563eb;
+        }
 
         .code-snippet {
             background: #1e1e1e;
@@ -329,6 +374,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -350,12 +396,8 @@
                 <form onsubmit="reviewGithubPR(event)">
                     <div class="form-group">
                         <label for="github-url">GitHub Pull Request URL</label>
-                        <input 
-                            type="url" 
-                            id="github-url" 
-                            placeholder="https://github.com/username/repo/pull/123"
-                            required
-                        >
+                        <input type="url" id="github-url" placeholder="https://github.com/username/repo/pull/123"
+                            required>
                         <p class="help-text">Enter a valid GitHub PR URL to analyze the code changes</p>
                     </div>
 
@@ -370,20 +412,12 @@
                     <div class="code-grid">
                         <div class="form-group">
                             <label for="old-code">Old Code</label>
-                            <textarea 
-                                id="old-code" 
-                                placeholder="Paste the original code here..."
-                                required
-                            ></textarea>
+                            <textarea id="old-code" placeholder="Paste the original code here..." required></textarea>
                         </div>
 
                         <div class="form-group">
                             <label for="new-code">New Code</label>
-                            <textarea 
-                                id="new-code" 
-                                placeholder="Paste the modified code here..."
-                                required
-                            ></textarea>
+                            <textarea id="new-code" placeholder="Paste the modified code here..." required></textarea>
                         </div>
                     </div>
 
@@ -429,9 +463,10 @@
                             <span class="severity severity-critical">CRITICAL</span>
                             <strong>SQL Injection Vulnerability</strong> - Line 45
                             <div class="code-snippet">
-<span class="line-number">45</span>query = "SELECT * FROM users WHERE id = " + userId;
+                                <span class="line-number">45</span>query = "SELECT * FROM users WHERE id = " + userId;
                             </div>
-                            User input is directly concatenated into SQL query without sanitization. Use parameterized queries instead.
+                            User input is directly concatenated into SQL query without sanitization. Use parameterized
+                            queries instead.
                         </li>
                     </ul>
                 </div>
@@ -443,7 +478,7 @@
                             <span class="severity severity-warning">WARNING</span>
                             <strong>Missing Error Handling</strong> - Line 78
                             <div class="code-snippet">
-<span class="line-number">78</span>const data = JSON.parse(response);
+                                <span class="line-number">78</span>const data = JSON.parse(response);
                             </div>
                             JSON.parse() can throw an exception. Wrap in try-catch block.
                         </li>
@@ -451,9 +486,10 @@
                             <span class="severity severity-warning">WARNING</span>
                             <strong>Potential Memory Leak</strong> - Line 102
                             <div class="code-snippet">
-<span class="line-number">102</span>setInterval(() => { fetchData(); }, 1000);
+                                <span class="line-number">102</span>setInterval(() => { fetchData(); }, 1000);
                             </div>
-                            No cleanup function provided. Consider storing the interval ID and clearing it when component unmounts.
+                            No cleanup function provided. Consider storing the interval ID and clearing it when
+                            component unmounts.
                         </li>
                     </ul>
                 </div>
@@ -479,7 +515,8 @@
                         </li>
                         <li>
                             <span class="severity severity-info">INFO</span>
-                            Code complexity in function 'processData' is high. Consider refactoring into smaller functions.
+                            Code complexity in function 'processData' is high. Consider refactoring into smaller
+                            functions.
                         </li>
                     </ul>
                 </div>
@@ -513,49 +550,46 @@
         function reviewGithubPR(event) {
             event.preventDefault();
             const url = document.getElementById('github-url').value;
-            
-            // Show results section with animation
-            showResults();
-            
-            // Here you would typically send the URL to your backend API
-            // and populate the results dynamically
-            
-            // Example: Send to backend
-            // fetch('/api/review-pr', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ url: url })
-            // })
-            // .then(response => response.json())
-            // .then(data => populateResults(data));
+            alert("GitHub PR review is not yet implemented. Please use Manual Input.");
         }
 
-        function reviewManualCode(event) {
+        async function reviewManualCode(event) {
             event.preventDefault();
             const oldCode = document.getElementById('old-code').value;
             const newCode = document.getElementById('new-code').value;
-            
-            // Show results section with animation
-            showResults();
-            
-            // Here you would typically send the code to your backend API
-            // and populate the results dynamically
-            
-            // Example: Send to backend
-            // fetch('/api/review-code', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ oldCode: oldCode, newCode: newCode })
-            // })
-            // .then(response => response.json())
-            // .then(data => populateResults(data));
+            const btn = event.target.querySelector('.btn-submit');
+            const originalText = btn.textContent;
+
+            btn.disabled = true;
+            btn.textContent = 'Analyzing...';
+
+            try {
+                const response = await fetch('/api/review', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ old_code: oldCode, new_code: newCode })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                populateResults(data);
+                showResults();
+            } catch (error) {
+                alert('Failed to review code: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
         }
 
         function showResults() {
             document.getElementById('results-section').classList.add('show');
             // Scroll to results
             setTimeout(() => {
-                document.getElementById('results-section').scrollIntoView({ 
+                document.getElementById('results-section').scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
@@ -570,27 +604,87 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Example function to populate results dynamically
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         function populateResults(data) {
+            if (data.error) {
+                alert("Error analyzing code: " + data.error);
+                return;
+            }
+
             // Update score badge
-            const score = data.score || 85;
+            const score = data.score !== undefined ? data.score : 0;
             const badge = document.getElementById('score-badge');
             badge.textContent = `Score: ${score}/100`;
-            
-            if (score >= 90) badge.className = 'score-badge score-excellent';
-            else if (score >= 75) badge.className = 'score-badge score-good';
-            else if (score >= 60) badge.className = 'score-badge score-warning';
-            else badge.className = 'score-badge score-critical';
-            
+
+            badge.className = 'score-badge';
+            if (score >= 90) badge.classList.add('score-excellent');
+            else if (score >= 75) badge.classList.add('score-good');
+            else if (score >= 60) badge.classList.add('score-warning');
+            else badge.classList.add('score-critical');
+
             // Update stats
             document.getElementById('stat-issues').textContent = data.totalIssues || 0;
             document.getElementById('stat-critical').textContent = data.criticalCount || 0;
             document.getElementById('stat-warnings').textContent = data.warningCount || 0;
             document.getElementById('stat-suggestions').textContent = data.suggestionCount || 0;
-            
-            // Populate issue lists dynamically based on API response
-            // This is where you'd insert the actual issues from your backend
+
+            // Clear lists
+            document.getElementById('critical-issues').innerHTML = '';
+            document.getElementById('warning-issues').innerHTML = '';
+            document.getElementById('suggestions').innerHTML = '';
+            document.getElementById('positive-findings').innerHTML = '';
+
+            // Populate issues
+            if (data.issues && Array.isArray(data.issues)) {
+                data.issues.forEach(issue => {
+                    const li = document.createElement('li');
+                    let severityClass = 'severity-info';
+                    let listId = 'suggestions';
+                    let badgeText = 'INFO';
+
+                    if (issue.category === 'critical') {
+                        severityClass = 'severity-critical';
+                        listId = 'critical-issues';
+                        badgeText = 'CRITICAL';
+                    } else if (issue.category === 'warning') {
+                        severityClass = 'severity-warning';
+                        listId = 'warning-issues';
+                        badgeText = 'WARNING';
+                    }
+
+                    li.innerHTML = `
+                        <span class="severity ${severityClass}">${badgeText}</span>
+                        <strong>${escapeHtml(issue.title)}</strong> ${issue.lineNumber ? `- Line ${issue.lineNumber}` : ''}
+                        <div class="code-snippet">
+                            ${issue.snippet ? escapeHtml(issue.snippet) : ''}
+                        </div>
+                        <p>${escapeHtml(issue.description)}</p>
+                        <p><em>Remediation: ${escapeHtml(issue.remediation)}</em></p>
+                    `;
+                    document.getElementById(listId).appendChild(li);
+                });
+            }
+
+            // Populate positive findings
+            if (data.positiveFindings && Array.isArray(data.positiveFindings)) {
+                const positiveList = document.getElementById('positive-findings');
+                data.positiveFindings.forEach(finding => {
+                    const li = document.createElement('li');
+                    li.textContent = finding;
+                    positiveList.appendChild(li);
+                });
+            }
         }
     </script>
 </body>
+
 </html>
